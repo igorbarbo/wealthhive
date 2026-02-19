@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "wealthhive"
+version = "1.0.0"
+description = "Plataforma Quantitativa Open-Source para Gestão de Investimentos"
+authors = ["WealthHive Team <team@wealthhive.dev>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/wealthhive/wealthhive"
+keywords = ["quantitative", "finance", "machine-learning", "portfolio", "trading"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.104.0"
+uvicorn = {extras = ["standard"], version = "^0.24.0"}
+streamlit = "^1.28.0"
+sqlalchemy = "^2.0.0"
+alembic = "^1.12.0"
+psycopg2-binary = "^2.9.9"
+redis = "^5.0.0"
+celery = "^5.3.0"
+torch = "^2.1.0"
+transformers = "^4.35.0"
+scikit-learn = "^1.3.0"
+numpy = "^1.24.0"
+pandas = "^2.0.0"
+yfinance = "^0.2.0"
+bcrypt = "^4.1.0"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+websockets = "^12.0"
+pydantic = "^2.5.0"
+pydantic-settings = "^2.1.0"
+python-dotenv = "^1.0.0"
+prometheus-client = "^0.19.0"
+structlog = "^23.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+black = "^23.11.0"
+isort = "^5.12.0"
+mypy = "^1.7.0"
+jupyter = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
