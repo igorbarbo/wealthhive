@@ -1,0 +1,3 @@
+"""
+Message queue infrastructure
+"""
