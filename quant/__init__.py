@@ -1,0 +1,3 @@
+"""
+Quantitative finance module
+"""
