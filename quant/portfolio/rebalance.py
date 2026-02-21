@@ -131,3 +131,20 @@ class RebalanceEngine:
                         "asset": asset,
                         "action": "sell",
                         "sh
+                        "shares": lot["shares"],
+                        "value": lot["shares"] * current_price,
+                        "unrealized_loss": unrealized_loss,
+                        "tax_benefit": unrealized_loss * tax_rate,
+                        "reason": "tax_loss_harvesting",
+                    })
+        
+        # Then add regular rebalancing trades
+        regular_trades = self.generate_trades(
+            target_weights, current_weights, portfolio_value, prices
+        )
+        
+        # Combine, prioritizing tax-efficient trades
+        trades.extend([t for t in regular_trades if t["action"] == "buy"])
+        
+        return trades
+        
