@@ -1,6 +1,6 @@
 """
 Igorbarbo V16 Ultimate - Main Application Entry Point
-Versão Corrigida - Sem Warnings, FileNotFoundError e IndentationError
+Versão Corrigida - Sem Warnings, FileNotFoundError, IndentationError e SyntaxError
 Enterprise Financial Analytics Platform
 """
 
@@ -500,4 +500,4 @@ class UIRenderer:
                 key="sentiment_input"
             )
             
-            if st.button("🔍 Analisar Sentimento", key="analyze_senti
+            if st.button("🔍 Analisar Sentimento", key="
