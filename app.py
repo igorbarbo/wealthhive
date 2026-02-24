@@ -1,6 +1,6 @@
 """
 Igorbarbo V16 Ultimate - Main Application Entry Point
-Versão Corrigida - Sem Warnings, FileNotFoundError, IndentationError e SyntaxError
+Versao Corrigida - Sem Warnings, FileNotFoundError, IndentationError e SyntaxError
 Enterprise Financial Analytics Platform
 """
 
@@ -15,17 +15,17 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 os.environ["STREAMLIT_SERVER_ENABLE_CORS"] = "false"
 os.environ["STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION"] = "true"
 
-# CRIAR DIRETÓRIOS NECESSÁRIOS ANTES DE CONFIGURAR LOGGING
+# CRIAR DIRETORIOS NECESSARIOS ANTES DE CONFIGURAR LOGGING
 APP_ROOT = Path(__file__).parent.absolute()
 LOG_DIR = APP_ROOT / "logs"
 DATA_DIR = APP_ROOT / "data"
 CACHE_DIR = APP_ROOT / "cache"
 
-# Garantir que diretórios existem (crítico para Streamlit Cloud)
+# Garantir que diretorios existem (critico para Streamlit Cloud)
 for directory in [LOG_DIR, DATA_DIR, CACHE_DIR]:
     directory.mkdir(parents=True, exist_ok=True)
 
-# Agora configurar logging com diretório garantido existente
+# Agora configurar logging com diretorio garantido existente
 import logging
 
 logging.basicConfig(
@@ -52,10 +52,10 @@ APP_NAME = "Igorbarbo V16 Ultimate"
 APP_VERSION = "16.0.0"
 MAX_WORKERS = min(32, (os.cpu_count() or 1) + 4)
 
-# Configuração de página Streamlit - DEVE ser a primeira chamada Streamlit
+# Configuracao de pagina Streamlit - DEVE ser a primeira chamada Streamlit
 st.set_page_config(
     page_title=f"{APP_NAME} v{APP_VERSION}",
-    page_icon="📈",
+    page_icon=":chart_with_upwards_trend:",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
@@ -68,10 +68,7 @@ st.set_page_config(
 # CSS customizado para eliminar warnings visuais e melhorar UI
 st.markdown("""
     <style>
-        /* Esconder warnings do Streamlit */
         .stAlert[data-baseweb=\"notification\"] { display: none; }
-        
-        /* Estilos customizados premium */
         .main-header {
             font-size: 2.5rem;
             font-weight: 700;
@@ -112,7 +109,7 @@ st.markdown("""
 
 
 class AppState:
-    """Gerenciamento centralizado de estado da aplicação - Thread Safe."""
+    """Gerenciamento centralizado de estado da aplicacao - Thread Safe."""
     
     def __init__(self):
         self.initialized: bool = False
@@ -121,7 +118,7 @@ class AppState:
         self.cache: Dict[str, Any] = {}
     
     def initialize(self) -> None:
-        """Inicialização segura do estado com validação."""
+        """Inicializacao segura do estado com validacao."""
         if not self.initialized:
             try:
                 st.session_state['app_state'] = self
@@ -134,7 +131,7 @@ class AppState:
     
     @classmethod
     def get(cls) -> 'AppState':
-        """Factory method thread-safe para obter instância única."""
+        """Factory method thread-safe para obter instancia unica."""
         try:
             if 'app_state' not in st.session_state:
                 state = cls()
@@ -142,22 +139,21 @@ class AppState:
             return st.session_state['app_state']
         except Exception as e:
             logger.error(f"Error retrieving app state: {e}")
-            # Fallback para instância temporária se session_state falhar
             return cls()
 
 
 class DataService:
-    """Serviço de dados enterprise com cache, validação e tratamento de erros robusto."""
+    """Servico de dados enterprise com cache, validacao e tratamento de erros robusto."""
     
     @staticmethod
     @st.cache_data(ttl=3600, show_spinner=False)
     def fetch_market_data(ticker: str, days: int = 30) -> Optional[pd.DataFrame]:
         """
-        Busca dados de mercado com cache e validação.
+        Busca dados de mercado com cache e validacao.
         
         Args:
-            ticker: Símbolo do ativo (ex: PETR4, VALE3)
-            days: Período de dados em dias (padrão: 30)
+            ticker: Simbolo do ativo (ex: PETR4, VALE3)
+            days: Periodo de dados em dias (padrao: 30)
             
         Returns:
             DataFrame com dados OHLCV ou None se erro
@@ -169,9 +165,9 @@ class DataService:
         ticker = ticker.upper().strip()
         
         try:
-            # Simulação de dados de mercado - substituir por API real (YFinance, Alpha Vantage, etc)
+            # Simulacao de dados de mercado - substituir por API real
             dates = pd.date_range(end=datetime.now(), periods=days, freq='D')
-            np.random.seed(42)  # Reprodutibilidade
+            np.random.seed(42)
             
             base_price = np.random.uniform(10, 200)
             returns = np.random.normal(0.001, 0.02, days)
@@ -187,7 +183,6 @@ class DataService:
                 'ticker': ticker
             })
             
-            # Validação de dados
             if data.empty or data['close'].isnull().all():
                 raise ValueError(f"No valid data generated for {ticker}")
             
@@ -201,14 +196,7 @@ class DataService:
     @staticmethod
     def fetch_multiple_tickers(tickers: list, days: int = 30) -> Dict[str, Optional[pd.DataFrame]]:
         """
-        Busca paralela de múltiplos ativos usando ThreadPoolExecutor.
-        
-        Args:
-            tickers: Lista de símbolos (ex: ['PETR4', 'VALE3'])
-            days: Período de dados
-            
-        Returns:
-            Dicionário com DataFrames por ticker (None se falha)
+        Busca paralela de multiplos ativos usando ThreadPoolExecutor.
         """
         if not tickers:
             return {}
@@ -225,7 +213,7 @@ class DataService:
             for future in future_to_ticker:
                 ticker = future_to_ticker[future]
                 try:
-                    results[ticker] = future.result(timeout=30)  # Timeout de 30s
+                    results[ticker] = future.result(timeout=30)
                 except Exception as e:
                     logger.error(f"Error processing {ticker}: {e}")
                     results[ticker] = None
@@ -234,13 +222,13 @@ class DataService:
     
     @staticmethod
     def calculate_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
-        """Calcula indicadores técnicos básicos."""
+        """Calcula indicadores tecnicos basicos."""
         if df is None or df.empty:
             return df
         
         df = df.copy()
         
-        # Médias móveis
+        # Medias moveis
         df['sma_20'] = df['close'].rolling(window=20, min_periods=1).mean()
         df['sma_50'] = df['close'].rolling(window=50, min_periods=1).mean()
         
@@ -265,52 +253,47 @@ class UIRenderer:
     
     @staticmethod
     def render_header() -> None:
-        """Renderiza cabeçalho principal com gradiente."""
+        """Renderiza cabecalho principal com gradiente."""
         st.markdown(f'<div class="main-header">{APP_NAME} v{APP_VERSION}</div>', unsafe_allow_html=True)
         st.markdown("---")
     
     @staticmethod
     def render_sidebar() -> str:
-        """Renderiza sidebar com navegação e informações de sistema."""
+        """Renderiza sidebar com navegacao e informacoes de sistema."""
         with st.sidebar:
-            # Logo placeholder
-            st.markdown("### 📊 WealthHive")
+            st.markdown("### WealthHive")
             st.markdown("---")
             
-            # Navegação principal
             page = st.radio(
-                "Navegação Principal",
-                ["🏠 Dashboard", "📈 Análise Técnica", "🤖 Machine Learning", "💼 Portfolio", "⚙️ Configurações"],
+                "Navegacao Principal",
+                ["Dashboard", "Analise Tecnica", "Machine Learning", "Portfolio", "Configuracoes"],
                 key="navigation_radio",
                 label_visibility="collapsed"
             )
             
-            # Informações de sistema
             st.markdown("---")
-            with st.expander("ℹ️ Informações do Sistema", expanded=False):
+            with st.expander("Informacoes do Sistema", expanded=False):
                 app_state = AppState.get()
-                st.text(f"Versão: {APP_VERSION}")
-                st.text(f"Início: {app_state.session_start.strftime('%H:%M:%S')}")
+                st.text(f"Versao: {APP_VERSION}")
+                st.text(f"Inicio: {app_state.session_start.strftime('%H:%M:%S')}")
                 st.text(f"Workers: {MAX_WORKERS}")
                 st.text(f"Log Dir: {LOG_DIR.exists()}")
             
-            # Links úteis
             st.markdown("---")
-            st.caption("[Documentação](https://igorbarbo.com/docs) | [Suporte](https://igorbarbo.com/support)")
+            st.caption("[Documentacao](https://igorbarbo.com/docs) | [Suporte](https://igorbarbo.com/support)")
             
             return page
     
     @staticmethod
     def render_metrics() -> None:
-        """Renderiza cards de métricas do mercado."""
+        """Renderiza cards de metricas do mercado."""
         cols = st.columns(4)
         
-        # Dados simulados - substituir por API real
         metrics = [
-            ("📈 Ibovespa", "125.432", "+1.2%", "normal"),
-            ("💵 Dólar", "5.12", "-0.3%", "inverse"),
-            ("🏦 Selic", "11.75%", "0.0%", "off"),
-            ("₿ Bitcoin", "R$ 250K", "+5.4%", "normal")
+            ("Ibovespa", "125.432", "+1.2%", "normal"),
+            ("Dolar", "5.12", "-0.3%", "inverse"),
+            ("Selic", "11.75%", "0.0%", "off"),
+            ("Bitcoin", "R$ 250K", "+5.4%", "normal")
         ]
         
         for col, (label, value, delta, delta_color) in zip(cols, metrics):
@@ -325,16 +308,15 @@ class UIRenderer:
     
     @staticmethod
     def render_dashboard() -> None:
-        """Renderiza página principal do dashboard."""
+        """Renderiza pagina principal do dashboard."""
         UIRenderer.render_metrics()
         
-        st.markdown("### 📊 Visão Geral do Mercado")
+        st.markdown("### Visao Geral do Mercado")
         
-        # Layout responsivo
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            st.subheader("Desempenho dos Principais Índices")
+            st.subheader("Desempenho dos Principais Indices")
             chart_data = pd.DataFrame(
                 np.random.randn(100, 4).cumsum(axis=0),
                 columns=['Ibovespa', 'S&P500', 'Nasdaq', 'DAX'],
@@ -343,7 +325,7 @@ class UIRenderer:
             st.line_chart(chart_data, use_container_width=True, height=400)
         
         with col2:
-            st.subheader("🔥 Ativos em Destaque")
+            st.subheader("Ativos em Destaque")
             tickers = ["PETR4", "VALE3", "ITUB4", "BBDC4", "WEGE3"]
             
             with st.spinner("Carregando dados..."):
@@ -364,12 +346,12 @@ class UIRenderer:
                             color = "green" if change >= 0 else "red"
                             st.markdown(f"<span style='color:{color}'>{change:+.2f}%</span>", unsafe_allow_html=True)
                     else:
-                        st.markdown(f"**{ticker}** - Dados indisponíveis")
+                        st.markdown(f"**{ticker}** - Dados indisponiveis")
     
     @staticmethod
     def render_technical_analysis() -> None:
-        """Renderiza análise técnica completa."""
-        st.header("📈 Análise Técnica Avançada")
+        """Renderiza analise tecnica completa."""
+        st.header("Analise Tecnica Avancada")
         
         col_input, col_info = st.columns([1, 2])
         
@@ -379,11 +361,11 @@ class UIRenderer:
                 value="PETR4", 
                 key="ta_ticker",
                 placeholder="Ex: PETR4, VALE3",
-                help="Digite o código do ativo na Bovespa"
+                help="Digite o codigo do ativo na Bovespa"
             ).upper().strip()
             
             period = st.selectbox(
-                "Período:",
+                "Periodo:",
                 ["1M", "3M", "6M", "1Y", "5Y"],
                 index=1,
                 key="ta_period"
@@ -397,107 +379,123 @@ class UIRenderer:
                 data = DataService.fetch_market_data(ticker, days=days)
                 
                 if data is not None and not data.empty:
-                    # Calcular indicadores
                     data = DataService.calculate_technical_indicators(data)
                     
                     with col_info:
-                        st.success(f"✅ Dados carregados: {ticker} ({len(data)} registros)")
+                        st.success(f"Dados carregados: {ticker} ({len(data)} registros)")
                         
-                        # Métricas principais
                         current_price = data['close'].iloc[-1]
                         rsi = data['rsi'].iloc[-1]
                         trend = "Alta" if data['close'].iloc[-1] > data['sma_20'].iloc[-1] else "Baixa"
                         
                         m1, m2, m3, m4 = st.columns(4)
-                        m1.metric("Preço Atual", f"R$ {current_price:.2f}")
+                        m1.metric("Preco Atual", f"R$ {current_price:.2f}")
                         m2.metric("RSI (14)", f"{rsi:.1f}", "Sobrevenda" if rsi < 30 else "Sobrecompra" if rsi > 70 else "Neutro")
-                        m3.metric("Tendência", trend)
+                        m3.metric("Tendencia", trend)
                         m4.metric("Volatilidade", f"{data['close'].pct_change().std()*100:.2f}%")
                     
-                    # Gráfico principal
-                    st.subheader("Gráfico de Preços")
+                    st.subheader("Grafico de Precos")
                     chart_df = data.set_index('date')[['close', 'sma_20', 'sma_50', 'bb_upper', 'bb_lower']].copy()
                     st.line_chart(chart_df, use_container_width=True, height=500)
                     
-                    # Dados brutos
-                    with st.expander("📋 Ver Dados Brutos"):
+                    with st.expander("Ver Dados Brutos"):
                         st.dataframe(data.tail(20), use_container_width=True)
                         
                 else:
-                    st.error(f"❌ Não foi possível carregar dados para '{ticker}'. Verifique o ticker e tente novamente.")
+                    st.error(f"Nao foi possivel carregar dados para '{ticker}'. Verifique o ticker e tente novamente.")
                     logger.warning(f"Failed to load data for ticker: {ticker}")
     
     @staticmethod
     def render_machine_learning() -> None:
-        """Renderiza seção de Machine Learning e NLP."""
-        st.header("🤖 Inteligência Artificial & Análise Quantitativa")
+        """Renderiza secao de Machine Learning e NLP."""
+        st.header("Inteligencia Artificial & Analise Quantitativa")
         
         tabs = st.tabs([
-            "🔮 Previsão LSTM", 
-            "💭 Sentimento (NLP)", 
-            "⚖️ Otimização Markowitz",
-            "📉 Value at Risk (VaR)"
+            "Previsao LSTM", 
+            "Sentimento (NLP)", 
+            "Otimizacao Markowitz",
+            "Value at Risk (VaR)"
         ])
         
         with tabs[0]:
-            st.subheader("Previsão com Redes Neurais (LSTM + Attention)")
+            st.subheader("Previsao com Redes Neurais (LSTM + Attention)")
             st.markdown("""
-                Modelo de deep learning para predição de preços utilizando:
-                - **LSTM (Long Short-Term Memory)** para capturar dependências temporais
-                - **Mecanismo de Attention** para focar em padrões relevantes
-                - **GPU Acceleration** quando disponível
+                Modelo de deep learning para predicao de precos utilizando:
+                - LSTM (Long Short-Term Memory) para capturar dependencias temporais
+                - Mecanismo de Attention para focar em padroes relevantes
+                - GPU Acceleration quando disponivel
             """)
             
             col1, col2 = st.columns(2)
             with col1:
-                pred_ticker = st.text_input("Ativo para previsão:", "PETR4", key="lstm_ticker").upper()
+                pred_ticker = st.text_input("Ativo para previsao:", "PETR4", key="lstm_ticker").upper()
                 horizon = st.slider("Horizonte (dias):", 1, 30, 7, key="lstm_horizon")
             
             with col2:
-                confidence = st.slider("Intervalo de Confiança:", 80, 99, 95, key="lstm_confidence")
-                use_gpu = st.checkbox("Usar GPU (se disponível)", value=True, key="lstm_gpu")
+                confidence = st.slider("Intervalo de Confianca:", 80, 99, 95, key="lstm_confidence")
+                use_gpu = st.checkbox("Usar GPU (se disponivel)", value=True, key="lstm_gpu")
             
-            if st.button("🚀 Executar Previsão", key="run_lstm", use_container_width=True):
+            if st.button("Executar Previsao", key="run_lstm", use_container_width=True):
                 progress_container = st.empty()
                 with progress_container.container():
                     progress_bar = st.progress(0)
                     status_text = st.empty()
                     
                     steps = [
-                        "Carregando dados históricos...",
-                        "Pré-processando features...",
+                        "Carregando dados historicos...",
+                        "Pre-processando features...",
                         "Carregando modelo LSTM...",
-                        "Executando inferência...",
-                        "Calculando intervalos de confiança...",
+                        "Executando inferencia...",
+                        "Calculando intervalos de confianca...",
                         "Finalizando..."
                     ]
                     
                     for i, step in enumerate(steps):
-                        status_text.text(f"⏳ {step}")
+                        status_text.text(f"{step}")
                         import time
-                        time.sleep(0.5)  # Simulação
+                        time.sleep(0.5)
                         progress_bar.progress((i + 1) / len(steps))
                     
-                    status_text.text("✅ Concluído!")
+                    status_text.text("Concluido!")
                 
-                # Resultados simulados
-                st.success(f"Previsão para {pred_ticker}: R$ 45.32 ± 2.15 ({confidence}% confiança)")
+                st.success(f"Previsao para {pred_ticker}: R$ 45.32 +/- 2.15 ({confidence}% confianca)")
                 
-                # Gráfico de previsão
                 pred_dates = pd.date_range(start=datetime.now(), periods=horizon, freq='D')
                 pred_values = np.cumsum(np.random.randn(horizon) * 0.5) + 45
-                pred_df = pd.DataFrame({'Data': pred_dates, 'Previsão': pred_values})
+                pred_df = pd.DataFrame({'Data': pred_dates, 'Previsao': pred_values})
                 st.line_chart(pred_df.set_index('Data'), use_container_width=True)
         
         with tabs[1]:
-            st.subheader("Análise de Sentimento com FinBERT")
-            st.markdown("Processamento de linguagem natural para análise de notícias e relatórios financeiros.")
+            st.subheader("Analise de Sentimento com FinBERT")
+            st.markdown("Processamento de linguagem natural para analise de noticias e relatorios financeiros.")
             
             news_input = st.text_area(
-                "Cole texto para análise (notícia, tweet, relatório):",
+                "Cole texto para analise (noticia, tweet, relatorio):",
                 height=150,
-                placeholder="Ex: Petrobras anuncia novo campo de petróleo com capacidade de 100k barris/dia...",
+                placeholder="Ex: Petrobras anuncia novo campo de petroleo com capacidade de 100k barris/dia...",
                 key="sentiment_input"
             )
             
-            if st.button("🔍 Analisar Sentimento", key="
+            # LINHA 503 CORRIGIDA - USANDO ASCII PURO
+            if st.button("Analisar Sentimento", key="analyze_sentiment"):
+                if news_input:
+                    result = {
+                        "sentimento": "Positivo",
+                        "confianca": 0.87,
+                        "entidades": ["PETR4", "OPEP", "Petroleo"],
+                        "palavras_chave": ["producao", "crescimento", "lucro"],
+                        "impacto_estimado": "Alto"
+                    }
+                    
+                    col_pos, col_neu, col_neg = st.columns(3)
+                    col_pos.metric("Positivo", "87%", "Aumento")
+                    col_neu.metric("Neutro", "10%", "Estavel")
+                    col_neg.metric("Negativo", "3%", "Queda")
+                    
+                    st.json(result)
+                else:
+                    st.warning("Por favor, insira um texto para analise.")
+        
+        with tabs[2]:
+            st.subheader("Otimizacao de Portfolio - Markowitz")
+            st.markdown("Otimizacao qu
